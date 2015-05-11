@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="inc">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="inc\ui">
+      <UniqueIdentifier>{7c90adf0-51a5-4db3-b746-86230843757d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc\ui\dialog">
+      <UniqueIdentifier>{a9a50850-014c-4075-b5cc-de24b2682fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ui">
+      <UniqueIdentifier>{a5e96044-45ce-4d50-b723-6f673ffd3dfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ui\dialog">
+      <UniqueIdentifier>{820c65b1-af58-4470-befc-077f66d18f95}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ScreenVideo.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\MainSettingDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingAboutDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingBasicDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingCodecDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingLiveDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingPushstreamDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialog\SettingRecordDlg.h">
+      <Filter>inc\ui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ScreenVideoDlg.h">
+      <Filter>inc\ui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ScreenVideo.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\MainSettingDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingAboutDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingBasicDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingCodecDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingLiveDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingPushstreamDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialog\SettingRecordDlg.cpp">
+      <Filter>src\ui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ScreenVideoDlg.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ScreenVideo.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ScreenVideo.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ScreenVideo.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
