@@ -43,13 +43,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\projects\myproject\ScreenVideo;D:\projects\myproject\ScreenVideo\ui;D:\projects\myproject\ScreenVideo\ui\dialog;D:\commonlib\ffmpeg\include;D:\commonlib\pthreads-w32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\commonlib\ffmpeg\lib;D:\commonlib\pthreads-w32\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\projects\myproject\ScreenVideo;D:\projects\myproject\ScreenVideo\ui;D:\projects\myproject\ScreenVideo\ui\dialog;D:\commonlib\ffmpeg\include;D:\commonlib\pthreads-w32\include;D:\commonlib\x264\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\commonlib\ffmpeg\lib;D:\commonlib\pthreads-w32\lib\x86;D:\commonlib\x264\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\projects\myproject\ScreenVideo;D:\projects\myproject\ScreenVideo\ui;D:\projects\myproject\ScreenVideo\ui\dialog;D:\commonlib\ffmpeg\include;D:\commonlib\pthreads-w32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\commonlib\ffmpeg\lib;D:\commonlib\pthreads-w32\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\projects\myproject\ScreenVideo;D:\projects\myproject\ScreenVideo\ui;D:\projects\myproject\ScreenVideo\ui\dialog;D:\commonlib\ffmpeg\include;D:\commonlib\pthreads-w32\include;D:\commonlib\x264\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\commonlib\ffmpeg\lib;D:\commonlib\pthreads-w32\lib\x86;D:\commonlib\x264\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,7 +62,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>pthreadVC2.lib;swscale.lib;avcodec.lib;avutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;swscale.lib;avcodec.lib;avutil.lib;libx264.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -90,7 +90,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>pthreadVC2.lib;swscale.lib;avcodec.lib;avutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;swscale.lib;avcodec.lib;avutil.lib;libx264.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

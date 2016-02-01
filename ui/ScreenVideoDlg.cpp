@@ -22,7 +22,7 @@ extern "C" {
 
 // CScreenVideoDlg 对话框
 
-
+#define FPS_TEST 1
 
 CScreenVideoDlg::CScreenVideoDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CScreenVideoDlg::IDD, pParent)
@@ -136,6 +136,25 @@ HCURSOR CScreenVideoDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+int getwindowssize(int * w,  int * h)
+{
+	HWND hwnd = ::GetDesktopWindow();
+	HDC hDC = ::GetDC(hwnd);//获取屏幕DC  
+
+	RECT rect;
+	::GetClientRect(hwnd, &rect);//获取屏幕大小  
+	if (w)
+	{
+		*w = (int)(rect.right - rect.left);
+	}
+	if (h)
+	{
+		*h = (int)(rect.bottom - rect.top);
+	}
+	::DeleteDC(hDC);
+	return 0;
+}
+
 int getwindowspic(unsigned char ** pdata)
 {
 	HWND hwnd = ::GetDesktopWindow();
@@ -143,12 +162,13 @@ int getwindowspic(unsigned char ** pdata)
 
 	RECT rect;
 	::GetClientRect(hwnd, &rect);//获取屏幕大小  
+
 	HDC hDCMem = ::CreateCompatibleDC(hDC);//创建兼容DC  
 
 	HBITMAP hBitMap = ::CreateCompatibleBitmap(hDC, rect.right, rect.bottom);//创建兼容位图  
 	HBITMAP hOldMap = (HBITMAP)::SelectObject(hDCMem, hBitMap);//将位图选入DC，并保存返回值  
 
-	::BitBlt(hDCMem, 0, 0, rect.right, rect.bottom, hDC, 0, 0, SRCCOPY);//将屏幕DC的图象复制到内存DC中  
+ 	::BitBlt(hDCMem, 0, 0, rect.right, rect.bottom, hDC, 0, 0, SRCCOPY);//将屏幕DC的图象复制到内存DC中  
 
 	BITMAPINFO * pbitmapInfo = (BITMAPINFO *)malloc(sizeof(BITMAPINFOHEADER) + 32);
 	memset(pbitmapInfo, 0, sizeof(BITMAPINFOHEADER) + 32);
@@ -188,6 +208,8 @@ void *PTW32_CDECL record_thread(void * arg)
 // 		OutputDebugString(TEXT("record_thread start...\n"));
 // 		Sleep(1000);
 // 	}
+	CodecAttribute * codec_attr = Configuration::GetInstance()->GetMajorCodecCoinfig();
+	RecordAttribute * rec_attr = Configuration::GetInstance()->GetRecordConfig();
 	int ret;
 	FILE * yuvfile = NULL;
 	AVFrame * rgb_picture = NULL;
@@ -196,8 +218,15 @@ void *PTW32_CDECL record_thread(void * arg)
 	AVCodecContext * codec_ctx = NULL;
 	SwsContext * sws_ctx = NULL;
 	unsigned char * pRGBdata = NULL;
+	int iRawWidth = 0;
+	int iRawHeight = 0;
 	Sleep(2);
-	yuvfile = fopen("screenvideo.yuv", "w+");
+	getwindowssize(&iRawWidth, &iRawHeight);
+	char filename[255];
+	sprintf(filename, "mkdir %s", rec_attr->recordPath.c_str());
+	system(filename);
+	sprintf(filename, "%s\\screenvideo.yuv", rec_attr->recordPath.c_str());
+	yuvfile = fopen(filename, "w+");
 	if (yuvfile==NULL)
 	{
 	}
@@ -215,30 +244,36 @@ void *PTW32_CDECL record_thread(void * arg)
 
 	yuv_picture = av_frame_alloc();
 
-	codec_ctx->width = 1920;
-	codec_ctx->height = 1080;
-	codec_ctx->bit_rate = 1024 * 4;
-	codec_ctx->gop_size = 30;
+	codec_ctx->width = codec_attr->iWidth;
+	codec_ctx->height = codec_attr->iHeight;
+	codec_ctx->bit_rate = codec_attr->iBitrate;
+	codec_ctx->gop_size = codec_attr->iInternal;
 
-	int size = codec_ctx->width*codec_ctx->height;
+	int size = iRawWidth*iRawHeight;
 
-	yuv_picture->data[0] = (uint8_t *)malloc(960*540 * 3 / 2);
-	yuv_picture->data[1] = yuv_picture->data[0] + 960 * 540;
-	yuv_picture->data[2] = yuv_picture->data[1] + 960 * 540 / 4;
-	yuv_picture->linesize[0] = 960;// codec_ctx->width;
-	yuv_picture->linesize[1] = 540 / 2;// codec_ctx->width / 2;
-	yuv_picture->linesize[2] = 540 / 2;//codec_ctx->width / 2;
+	yuv_picture->data[0] = (uint8_t *)malloc(codec_attr->iWidth * codec_attr->iHeight * 3 / 2);
+	yuv_picture->data[1] = yuv_picture->data[0] + codec_attr->iWidth * codec_attr->iHeight;
+	yuv_picture->data[2] = yuv_picture->data[1] + codec_attr->iWidth * codec_attr->iHeight / 4;
+	yuv_picture->linesize[0] = codec_attr->iWidth;// codec_ctx->width;
+	yuv_picture->linesize[1] = codec_attr->iWidth / 2;// codec_ctx->width / 2;
+	yuv_picture->linesize[2] = codec_attr->iWidth / 2;//codec_ctx->width / 2;
 
 	rgb_picture->data[0] = (uint8_t *)malloc(size * 3);
 	rgb_picture->data[1] = rgb_picture->data[0] + size;
 	rgb_picture->data[2] = rgb_picture->data[1] + size;
-	rgb_picture->linesize[0] = codec_ctx->width*3;
-	rgb_picture->linesize[1] = codec_ctx->width;
-	rgb_picture->linesize[2] = codec_ctx->width;
+	rgb_picture->linesize[0] = iRawWidth * 3;
+	rgb_picture->linesize[1] = iRawWidth;
+	rgb_picture->linesize[2] = iRawWidth;
 
-	sws_ctx = sws_getContext(codec_ctx->width, codec_ctx->height, PIX_FMT_RGB24,960, 540, PIX_FMT_YUV420P, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+	sws_ctx = sws_getContext(iRawWidth, iRawHeight, PIX_FMT_BGR24, codec_attr->iWidth, codec_attr->iHeight, PIX_FMT_YUV420P, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 
+#if FPS_TEST
+	double fps = 0;
 	int count = 0;
+	clock_t cur_time, pre_time;
+	cur_time = pre_time = clock();
+#endif
+
 	while (bStart==1)
 	{
 		if (bPause==0)
@@ -246,49 +281,45 @@ void *PTW32_CDECL record_thread(void * arg)
 			Sleep(10);
 			continue;
 		}
+
+#if FPS_TEST
+		count++;
+		if (count>=100)
+		{
+			CString str;
+			cur_time = clock();
+			fps = (double)count * 1000 / (cur_time - pre_time);
+			str.Format(TEXT("fps = %f\n"),fps);
+			pre_time = cur_time;
+			count = 0;
+			OutputDebugString(str);
+		}
+#endif
 		getwindowspic(&pRGBdata);
-// 		rgb_picture->format = PIX_FMT_RGB24;
-// 		ret = avpicture_fill((AVPicture *)rgb_picture, (uint8_t*)pRGBdata, PIX_FMT_RGB32, codec_ctx->width, codec_ctx->height);
-		for (int i = 0; i < codec_ctx->height; i++)
+		rgb_picture->format = PIX_FMT_RGB24;
+		ret = avpicture_fill((AVPicture *)rgb_picture, (uint8_t*)pRGBdata, PIX_FMT_RGB32, codec_ctx->width, codec_ctx->height);
+		for (int i = 0; i < iRawHeight; i++)
 		{
-			for (int j = 0; j < codec_ctx->width; j++)
+			for (int j = 0; j < iRawWidth; j++)
 			{
- 				rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 0] = pRGBdata[4 * ((codec_ctx->height - i - 1)*codec_ctx->width + j) + 0];
- 				rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 1] = pRGBdata[4 * ((codec_ctx->height - i - 1)*codec_ctx->width + j) + 1];
- 				rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 2] = pRGBdata[4 * ((codec_ctx->height - i - 1)*codec_ctx->width + j) + 2];
-// 				if (i<codec_ctx->height/3)
-// 				{
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 0] = 0xff;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 1] = 0;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 2] = 0;
-// 				}
-// 				else if (i>codec_ctx->height * 2/ 3)
-// 				{
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 0] = 0;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 1] = 0;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 2] = 0xff;
-// 				}else
-// 				{
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 0] = 0;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 1] = 0xff;
-// 					rgb_picture->data[0][3 * (i*codec_ctx->width + j) + 2] = 0;
-// 				}
-
+				rgb_picture->data[0][3 * (i*iRawWidth + j) + 0] = pRGBdata[4 * ((iRawHeight - i - 1)*iRawWidth + j) + 0];
+				rgb_picture->data[0][3 * (i*iRawWidth + j) + 1] = pRGBdata[4 * ((iRawHeight - i - 1)*iRawWidth + j) + 1];
+				rgb_picture->data[0][3 * (i*iRawWidth + j) + 2] = pRGBdata[4 * ((iRawHeight - i - 1)*iRawWidth + j) + 2];
 			}
 		}
 
-		if (pRGBdata)
-		{
-			ret = sws_scale(sws_ctx, rgb_picture->data, rgb_picture->linesize, 0, codec_ctx->height, yuv_picture->data, yuv_picture->linesize);
+		do{
+			if (!pRGBdata)
 			{
-				count++;
-// 				fwrite(rgb_picture->data[0], size * 3, 1, yuvfile);
-// 				fwrite(pRGBdata, size * 4, 1, yuvfile);
-				fwrite(yuv_picture->data[0], 960 * 540 * 3 / 2, 1, yuvfile);
-// 				fwrite(yuv_picture->data[1], size / 4, 1, yuvfile);
-// 				fwrite(yuv_picture->data[2], size / 4, 1, yuvfile);
+				break;
 			}
-		}
+			ret = sws_scale(sws_ctx, rgb_picture->data, rgb_picture->linesize, 0, iRawHeight, yuv_picture->data, yuv_picture->linesize);
+			if (ret < 0)
+			{
+				break;
+			}
+			fwrite(yuv_picture->data[0], codec_attr->iWidth * codec_attr->iHeight * 3 / 2, 1, yuvfile);
+		} while (0);
 	}
 	fclose(yuvfile);
 	if (pRGBdata)
